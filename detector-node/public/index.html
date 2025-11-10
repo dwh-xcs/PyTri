@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detector de Objetos Web 🧠</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.16.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+</head>
+<body>
+  <h1>🎥 Detector de Objetos com TensorFlow.js</h1>
+
+  <div id="container">
+    <video id="webcam" autoplay playsinline muted></video>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <p id="status">Carregando modelo...</p>
+  <p id="objects"></p>
+
+  <script>
+    let model, video, canvas, ctx;
+    let lastSpoken = "";
+    let lastTime = 0;
+
+    const SPEECH_INTERVAL = 2000;
+
+    async function init() {
+      // Carrega modelo
+      model = await cocoSsd.load();
+      document.getElementById('status').innerText = 'Modelo carregado ✅';
+
+      // Inicia webcam
+      video = document.getElementById('webcam');
+      canvas = document.getElementById('canvas');
+      ctx = canvas.getContext('2d');
+
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+
+      video.addEventListener('loadeddata', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        detectFrame();
+      });
+    }
+
+    async function detectFrame() {
+      const predictions = await model.detect(video);
+      drawPredictions(predictions);
+      speakObjects(predictions);
+      requestAnimationFrame(detectFrame);
+    }
+
+    function drawPredictions(predictions) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.font = '16px Arial';
+      ctx.strokeStyle = '#00FF00';
+      ctx.lineWidth = 2;
+
+      const detectedNames = [];
+
+      predictions.forEach(pred => {
+        if (pred.score < 0.6) return;
+        const [x, y, w, h] = pred.bbox;
+        ctx.strokeRect(x, y, w, h);
+        ctx.fillStyle = '#00FF00';
+        ctx.fillText(`${pred.class} ${(pred.score * 100).toFixed(1)}%`, x, y > 10 ? y - 5 : 10);
+        detectedNames.push(pred.class);
+      });
+
+      const text = detectedNames.length
+        ? "Objetos: " + [...new Set(detectedNames)].join(", ")
+        : "Nenhum objeto detectado";
+      document.getElementById('objects').innerText = text;
+    }
+
+    function speakObjects(predictions) {
+      const names = [...new Set(predictions.filter(p => p.score >= 0.7).map(p => p.class))];
+      if (names.length === 0) return;
+
+      const sentence = "Vejo " + names.join(", ");
+      const now = Date.now();
+      if (sentence !== lastSpoken && now - lastTime > SPEECH_INTERVAL) {
+        const utterance = new SpeechSynthesisUtterance(sentence);
+        utterance.lang = 'pt-BR';
+        speechSynthesis.speak(utterance);
+        lastSpoken = sentence;
+        lastTime = now;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

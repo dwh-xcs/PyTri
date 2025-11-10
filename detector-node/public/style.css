@@ -1,0 +1,32 @@
+body {
+  background-color: #111;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+#container {
+  position: relative;
+  display: inline-block;
+}
+
+video, canvas {
+  border-radius: 12px;
+  width: 640px;
+  height: 480px;
+  object-fit: cover;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#status {
+  margin-top: 10px;
+  color: #0f0;
+  font-weight: bold;
+}

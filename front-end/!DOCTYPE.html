@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aplicativo Acessível</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+
+    <!-- Cabeçalho -->
+    <div class="header">
+      <button id="statusBtn" class="record-btn" aria-live="assertive">
+        🔴 Gravando...
+      </button>
+      <button class="sound-btn" id="voiceAssist" aria-label="Ativar assistente de voz">
+        🔊
+      </button>
+    </div>
+
+    <!-- Imagem de fundo -->
+    <div class="background">
+      <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=60" alt="Avenida Paulista com prédios e árvores">
+    </div>
+
+    <!-- Caixa descritiva -->
+    <div class="text-box" role="region" aria-label="Descrição visual">
+      <p><strong id="local">Avenida Paulista</strong></p>
+      <p><strong id="detalhe">Carros</strong></p>
+      <p><em id="texto">TEXTO............................</em></p>
+    </div>
+
+    <!-- Botões inferiores -->
+    <div class="footer">
+      <button class="icon-btn" id="cameraBtn" aria-label="Abrir câmera">📷</button>
+      <button class="icon-btn mic" id="micBtn" aria-label="Ativar microfone">🎤</button>
+      <button class="icon-btn info" id="helpBtn" aria-label="Ajuda">❓</button>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
